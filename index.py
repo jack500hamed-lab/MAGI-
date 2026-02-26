@@ -1,39 +1,43 @@
 import streamlit as st
 
-# إعدادات الصفحة والألوان
+# إعدادات الصفحة
 st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 
-# القائمة الجانبية للتحكم (اللغة والألوان)
+# القائمة الجانبية (Sidebar)
 with st.sidebar:
     st.title("Settings ⚙️")
     lang = st.selectbox("Select Language / اختر اللغة", ["Arabic", "English"])
-    theme_color = st.color_picker("Pick a Theme Color / اختر لون الواجهة", "#FF4B4B")
+    theme_color = st.color_picker("Pick a Theme Color", "#00F2FF")
     st.write("---")
     st.write("Created by Ayman 🚀")
 
-# تطبيق النصوص بناءً على اللغة
+# النصوص بناءً على اللغة
 if lang == "Arabic":
-    title = "MAGI AI"
+    title_text = "MAGI AI"
     subtitle = "ارفع صورة للتحليل والتعلم"
-    button_text = "تصفح الصور"
+    button_label = "تصفح الصور من جهازك"
+    chat_label = "اسأل MAGI AI عن أي شيء..."
 else:
-    title = "MAGI AI"
-    subtitle = "Upload an image for analysis and learning"
-    button_text = "Browse images"
+    title_text = "MAGI AI"
+    subtitle = "Upload an image for analysis"
+    button_label = "Browse images from your device"
+    chat_label = "Ask MAGI AI anything..."
 
-# عرض الواجهة الرئيسية
-st.markdown(f"<h1 style='text-align: center; color: {theme_color};'>{title}</h1>", unsafe_allow_complete=True)
-st.write(f"<p style='text-align: center;'>{subtitle}</p>", unsafe_allow_complete=True)
+# عرض العنوان الملون
+st.markdown(f"<h1 style='text-align: center; color: {theme_color};'>{title_text}</h1>", unsafe_allow_html=True)
+st.markdown(f"<p style='text-align: center;'>{subtitle}</p>", unsafe_allow_html=True)
 
 # خانة رفع الصور
-uploaded_file = st.file_uploader(button_text, type=["jpg", "png", "jpeg"])
+uploaded_file = st.file_uploader(button_label, type=["jpg", "png", "jpeg"])
 
 if uploaded_file is not None:
-    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
-    st.success("Image uploaded successfully! / تم رفع الصورة بنجاح")
+    st.image(uploaded_file, caption="Image Ready!", use_container_width=True)
+    st.success("Success! / تم التحميل بنجاح")
 
-# خانة الدردشة (عشان تبدأ تتكلم معاه)
+# خانة الدردشة
 st.write("---")
-user_input = st.text_input("Ask MAGI AI / اسأل الذكاء الاصطناعي")
-if user_input:
-    st.write(f"MAGI AI says: I'm processing your request about '{user_input}'...")
+user_query = st.text_input(chat_label)
+
+if user_query:
+    st.info(f"MAGI AI: I received your message: '{user_query}'. I'm learning to respond better!")
+    
