@@ -1,43 +1,39 @@
 import streamlit as st
-import google.generativeai as genai
-from PIL import Image
 
-# 1. إعداد واجهة الموقع واللغات
-st.set_page_config(page_title="Vision AI Pro", layout="wide")
+# إعدادات الصفحة والألوان
+st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 
-# نظام تغيير اللغة (يتأقلم حسب اختيار المستخدم)
-if 'lang' not in st.session_state:
-    st.session_state.lang = "Arabic"
-
+# القائمة الجانبية للتحكم (اللغة والألوان)
 with st.sidebar:
-    st.session_state.lang = st.selectbox("Choose Language / اختر اللغة", ["Arabic", "English", "French", "Spanish", "Chinese"])
+    st.title("Settings ⚙️")
+    lang = st.selectbox("Select Language / اختر اللغة", ["Arabic", "English"])
+    theme_color = st.color_picker("Pick a Theme Color / اختر لون الواجهة", "#FF4B4B")
     st.write("---")
-    st.write("Development Log: Learning Mode Active")
+    st.write("Created by Ayman 🚀")
 
-# نصوص الواجهة حسب اللغة
-texts = {
-    "Arabic": {"title": "العين الذكية AI", "upload": "ارفع صورة للتحليل والتعلم", "btn": "حلل وتعلم"},
-    "English": {"title": "Vision AI Master", "upload": "Upload Image to Analyze & Learn", "btn": "Analyze & Learn"}
-}
+# تطبيق النصوص بناءً على اللغة
+if lang == "Arabic":
+    title = "MAGI AI"
+    subtitle = "ارفع صورة للتحليل والتعلم"
+    button_text = "تصفح الصور"
+else:
+    title = "MAGI AI"
+    subtitle = "Upload an image for analysis and learning"
+    button_text = "Browse images"
 
-curr = texts.get(st.session_state.lang, texts["English"])
+# عرض الواجهة الرئيسية
+st.markdown(f"<h1 style='text-align: center; color: {theme_color};'>{title}</h1>", unsafe_allow_complete=True)
+st.write(f"<p style='text-align: center;'>{subtitle}</p>", unsafe_allow_complete=True)
 
-st.title(curr["title"])
+# خانة رفع الصور
+uploaded_file = st.file_uploader(button_text, type=["jpg", "png", "jpeg"])
 
-# 2. منطقة رفع الصور
-uploaded_file = st.file_uploader(curr["upload"], type=["jpg", "png", "jpeg"])
+if uploaded_file is not None:
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    st.success("Image uploaded successfully! / تم رفع الصورة بنجاح")
 
-if uploaded_file:
-    image = Image.open(uploaded_file)
-    st.image(image, caption='Target Image', width=400)
-    
-    # 3. محرك الذكاء الاصطناعي (هنا بيحصل التعلم والتأقلم)
-    # ملاحظة: ستحتاج لمفتاح API من Google AI Studio (مجاني)
-    if st.button(curr["btn"]):
-        with st.spinner("Thinking & Learning..."):
-            # كود افتراضي لمحاكاة رد الفعل الذكي
-            response = f"تم تحليل الصورة بنجاح بلغة: {st.session_state.lang}. الموقع الآن يتعرف على الأنماط ويحدث قاعدة بياناته."
-            st.success(response)
-            
-            # هنا الموقع "بيتعلم" من خلال تسجيل الملاحظات
-            st.info("ملاحظة النظام: تم تحسين دقة التعرف على الألوان بناءً على هذه الصورة.")
+# خانة الدردشة (عشان تبدأ تتكلم معاه)
+st.write("---")
+user_input = st.text_input("Ask MAGI AI / اسأل الذكاء الاصطناعي")
+if user_input:
+    st.write(f"MAGI AI says: I'm processing your request about '{user_input}'...")
