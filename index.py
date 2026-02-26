@@ -2,49 +2,42 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# 1. إعدادات واجهة MAGI AI
+# 1. إعدادات الواجهة
 st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 st.markdown("<h1 style='text-align: center; color: #00F2FF;'>🤖 MAGI AI</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>مساعدك الذكي لتحليل الصور والدردشة</p>", unsafe_allow_html=True)
 
-# 2. تفعيل الذكاء الاصطناعي (Gemini)
+# 2. ربط المخ (API) بنسخة مستقرة
 try:
-    # بيسحب المفتاح اللي إنت حطيته في الـ Secrets
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    # التحديث هنا: استخدام النسخة الأحدث لضمان العمل
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
-except Exception as e:
-    st.error("⚠️ تأكد من إضافة المفتاح السري في إعدادات Secrets")
+    # استخدمنا النسخة المستقرة 'gemini-pro' للدردشة و 'gemini-pro-vision' للصور
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except:
+    st.error("⚠️ تأكد من وضع المفتاح السري في Secrets")
 
-# 3. قسم رفع الصور
+# 3. رفع الصور
 uploaded_file = st.file_uploader("ارفع صورة لـ MAGI AI", type=["jpg", "jpeg", "png"])
-
+img = None
 if uploaded_file:
     img = Image.open(uploaded_file)
-    st.image(img, caption="MAGI AI is looking at this image...", use_container_width=True)
+    st.image(img, caption="Image Ready!", use_container_width=True)
 
-# 4. قسم الدردشة والرد العبقري
+# 4. خانة الدردشة وزرار الإرسال
 st.write("---")
-user_query = st.text_input("اسأل MAGI AI أي شيء (عن الصورة أو عام):")
+user_query = st.text_input("اسأل MAGI AI أي شيء:")
+send_button = st.button("إرسال الطلب 🚀") # الزرار اللي كنت ناسيه!
 
-if user_query:
-    with st.spinner("MAGI AI يفكر الآن..."):
+if send_button and user_query:
+    with st.spinner("MAGI AI يفكر..."):
         try:
-            if uploaded_file:
-                # لو فيه صورة، بيحللها مع السؤال
+            if img:
+                # لو فيه صورة
                 response = model.generate_content([user_query, img])
             else:
-                # لو مفيش صورة، بيرد كدردشة عادية
+                # لو كلام بس
                 response = model.generate_content(user_query)
             
-            # عرض الرد بشكل احترافي
-            st.markdown("### 🤖 الرد:")
-            st.info(response.text)
+            st.markdown(f"### 🤖 الرد:\n{response.text}")
         except Exception as e:
-            # رسالة خطأ واضحة لو حصل مشكلة في السيرفر
-            st.error(f"عذراً، حدث خطأ في التواصل مع المخ الرقمي: {e}")
+            st.error(f"حدث خطأ: {e}")
 
-# توقيعك في الموقع
-st.sidebar.write("---")
-st.sidebar.write("Created with ❤️ by **Ayman**")
-    
+st.sidebar.write("Created by Ayman 🚀")
