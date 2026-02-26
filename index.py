@@ -26,4 +26,4 @@ if submit and user_query:
         except Exception as e:
             st.error("جوجل لسه معاندة، جرب تسأله سؤال بالانجليزي (Hi) وشوف")
 
-st.sidebar.write("Created by Ayman 🚀")
+st.sidebar.write("Created by Ayman
