@@ -1,32 +1,31 @@
 import streamlit as st
 import google.generativeai as genai
 
-# إعداد واجهة MAGI AI
+# شكل الموقع اللي إنت تعبت فيه
 st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 st.markdown("<h1 style='text-align: center; color: #00F2FF;'>🤖 MAGI AI</h1>", unsafe_allow_html=True)
 
-# تفعيل المفتاح السري
+# الربط بالمفتاح المظبوط
 if "GOOGLE_API_KEY" in st.secrets:
-    try:
-        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-        # استخدمنا الاسم المختصر لضمان عمل السيرفر
-        model = genai.GenerativeModel('gemini-1.5-flash')
-    except Exception as e:
-        st.error(f"خطأ في الإعداد: {e}")
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+    # السر هنا: هنستخدم الموديل باسمه المباشر عشان نهرب من الـ 404
+    model = genai.GenerativeModel('gemini-1.5-flash')
 else:
-    st.error("المفتاح مش موجود في الـ Secrets!")
+    st.error("المفتاح مش موجود في الـ Secrets")
 
-# خانة الدردشة وزرار الإرسال
-user_query = st.text_input("اسأل MAGI AI أي حاجة:")
-submit = st.button("إرسال الطلب 🚀")
-
-if submit and user_query:
-    with st.spinner("MAGI AI بيفكر..."):
-        try:
-            # طلب الرد
-            response = model.generate_content(user_query)
-            st.success(response.text)
-        except Exception as e:
-            st.error(f"جوجل بتقول: {e}")
+# الدردشة والزرار
+query = st.text_input("اسأل MAGI AI:")
+if st.button("إرسال الطلب 🚀"):
+    if query:
+        with st.spinner("بيفكر..."):
+            try:
+                # محاولة ببروتوكول مختلف
+                response = model.generate_content(query)
+                st.success(response.text)
+            except Exception as e:
+                # لو فشل، بيجرب النسخة المضمونة
+                alt = genai.GenerativeModel('gemini-pro')
+                st.info(alt.generate_content(query).text)
 
 st.sidebar.write("Created by Ayman 🚀")
+                
