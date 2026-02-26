@@ -9,9 +9,10 @@ st.markdown("<p style='text-align: center;'>مساعدك الذكي لتحليل
 
 # 2. تفعيل الذكاء الاصطناعي (Gemini)
 try:
-    # بيسحب المفتاح اللي إنت لسه حطيته في الـ Secrets
+    # بيسحب المفتاح اللي إنت حطيته في الـ Secrets
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    # التحديث هنا: استخدام النسخة الأحدث لضمان العمل
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
 except Exception as e:
     st.error("⚠️ تأكد من إضافة المفتاح السري في إعدادات Secrets")
 
@@ -40,9 +41,10 @@ if user_query:
             st.markdown("### 🤖 الرد:")
             st.info(response.text)
         except Exception as e:
-            st.error(f"حدث خطأ أثناء المعالجة: {e}")
+            # رسالة خطأ واضحة لو حصل مشكلة في السيرفر
+            st.error(f"عذراً، حدث خطأ في التواصل مع المخ الرقمي: {e}")
 
 # توقيعك في الموقع
 st.sidebar.write("---")
 st.sidebar.write("Created with ❤️ by **Ayman**")
-                
+    
