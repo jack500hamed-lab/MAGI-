@@ -2,47 +2,50 @@ import streamlit as st
 import google.generativeai as genai
 from PIL import Image
 
-# إعدادات الواجهة
+# 1. إعدادات واجهة MAGI AI
 st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 st.markdown("<h1 style='text-align: center; color: #00F2FF;'>🤖 MAGI AI</h1>", unsafe_allow_html=True)
 
-# تفعيل المخ بأكتر من محاولة (عشان نهرب من خطأ 404)
+# 2. ربط المفتاح (تأكد إنك كاتبه صح في Secrets)
 try:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    # بنجرب النسخة الأكثر استقراراً حالياً
-    model = genai.GenerativeModel('gemini-1.5-pro') 
-except:
-    st.error("تأكد من الـ API Key في الـ Secrets")
+    api_key = st.secrets["GOOGLE_API_KEY"]
+    genai.configure(api_key=api_key)
+    
+    # ده السطر اللي فيه اللغز كله - استخدمنا الاسم البسيط للموديل
+    model = genai.GenerativeModel('gemini-1.5-flash')
+except Exception as e:
+    st.error("فيه مشكلة في المفتاح السري، اتأكد منه في الـ Secrets")
 
-# رفع الصور
-uploaded_file = st.file_uploader("ارفع صورة", type=["jpg", "jpeg", "png"])
+# 3. رفع الصور
+uploaded_file = st.file_uploader("ارفع صورة لـ MAGI AI", type=["jpg", "jpeg", "png"])
 img = None
 if uploaded_file:
     img = Image.open(uploaded_file)
-    st.image(img, use_container_width=True)
+    st.image(img, caption="الصورة جاهزة للتحليل", use_container_width=True)
 
-# الدردشة وزرار الإرسال
-user_query = st.text_input("اسأل MAGI AI:")
-send = st.button("إرسال الطلب 🚀") # الزرار اللي طلبته ظهر هنا!
+# 4. خانة الدردشة وزرار الإرسال
+user_query = st.text_input("اسأل MAGI AI أي سؤال:")
+submit = st.button("إرسال الطلب 🚀")
 
-if send and user_query:
-    with st.spinner("MAGI AI بيفكر..."):
+if submit and user_query:
+    with st.spinner("MAGI AI بيفكر دلوقتي..."):
         try:
-            # محاولة تانية لو النسخة الأولى فشلت
             if img:
+                # لو فيه صورة بيبعتها للمخ مع السؤال
                 response = model.generate_content([user_query, img])
             else:
+                # لو كلام بس
                 response = model.generate_content(user_query)
             
             st.success(response.text)
         except Exception as e:
-            # لو فشل في pro يجرب flash
+            # لو الموديل لسه معصلج، هننادي على النسخة القديمة المضمونة
             try:
-                alt_model = genai.GenerativeModel('gemini-pro')
-                response = alt_model.generate_content(user_query)
+                legacy_model = genai.GenerativeModel('gemini-pro')
+                response = legacy_model.generate_content(user_query)
                 st.success(response.text)
             except:
-                st.error("جوجل لسه مش شايفة المفتاح، استنى دقيقة وجرب تاني.")
+                st.error(f"جوجل بتقول: {e}")
 
+st.sidebar.markdown("---")
 st.sidebar.write("Created by Ayman 🚀")
-    
