@@ -1,31 +1,31 @@
 import streamlit as st
 import google.generativeai as genai
 
-# شكل الموقع اللي إنت تعبت فيه
+# إعدادات الواجهة اللي تعبنا فيها
 st.set_page_config(page_title="MAGI AI", page_icon="🤖")
 st.markdown("<h1 style='text-align: center; color: #00F2FF;'>🤖 MAGI AI</h1>", unsafe_allow_html=True)
 
-# الربط بالمفتاح المظبوط
+# تفعيل المفتاح السري اللي إنت لسه جايبه
 if "GOOGLE_API_KEY" in st.secrets:
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    # السر هنا: هنستخدم الموديل باسمه المباشر عشان نهرب من الـ 404
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    try:
+        genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
+        # هنستخدم gemini-pro لأنه الأكثر استقراراً مع المفاتيح الجديدة
+        model = genai.GenerativeModel('gemini-pro')
+    except Exception as e:
+        st.error(f"مشكلة في التفعيل: {e}")
 else:
-    st.error("المفتاح مش موجود في الـ Secrets")
+    st.error("يا أيمن، حط المفتاح الجديد في الـ Secrets!")
 
-# الدردشة والزرار
-query = st.text_input("اسأل MAGI AI:")
+# خانة السؤال والزرار
+user_query = st.text_input("اسأل MAGI AI أي حاجة:")
 if st.button("إرسال الطلب 🚀"):
-    if query:
-        with st.spinner("بيفكر..."):
+    if user_query:
+        with st.spinner("MAGI AI بيفكر..."):
             try:
-                # محاولة ببروتوكول مختلف
-                response = model.generate_content(query)
+                response = model.generate_content(user_query)
                 st.success(response.text)
             except Exception as e:
-                # لو فشل، بيجرب النسخة المضمونة
-                alt = genai.GenerativeModel('gemini-pro')
-                st.info(alt.generate_content(query).text)
+                st.error("جرب تعمل ريفريش للموقع، المفتاح لسه بيفوق!")
 
 st.sidebar.write("Created by Ayman 🚀")
-                
+    
